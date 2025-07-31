@@ -9,12 +9,17 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -38,9 +43,11 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ToDoAppTheme {
-
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    TodoScreen(modifier = Modifier.padding(innerPadding))
+                    Column(Modifier.padding(innerPadding)) {
+                        TodoScreen()
+                    }
+
                 }
             }
         }
@@ -48,19 +55,21 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun TodoScreen(modifier: Modifier) {
+fun TodoScreen() {
     var todoText by remember { mutableStateOf("") }
     var todos by remember { mutableStateOf(listOf<String>()) }
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
-            .background(Color.Blue)
+            .padding(10.dp)
+
     ) {
         Row(
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.Red)
+
+
         ) {
 //            TodoInput(value = todoText, onChangeValue = {newText -> todoText = newText})
             OutlinedTextField(
@@ -69,35 +78,36 @@ fun TodoScreen(modifier: Modifier) {
                 label = {
                     Text("Entrer une tache a faire")
                 },
-
-                )
+                modifier = Modifier.weight(1f)
+            )
+Spacer(modifier = Modifier.width(10.dp))
             Button(onClick = {
                 if (todoText.isNotBlank()) {
                     todos = todos + todoText
+                    todoText = ""
                 }
-
-            }) { Text(text = "Add") }
+            }, shape = RoundedCornerShape(5.dp)) { Text(text = "Ajouter") }
         }
-        LazyColumn {
-            items(todos) { currentTodo ->
-                Text(text = currentTodo)
-            }
-        }
+        TodoList(todos = todos)
     }
 }
 
-//@Composable
-//fun TodoInput(value: String, onChangeValue: (String) -> Unit, modifier: Modifier = Modifier) {
-//    OutlinedTextField(value = value, onValueChange = onChangeValue, label = {
-//        Text("Entrer une tache a faire")
-//    }, modifier = Modifier.fillMaxWidth())
-//}
-
+@Composable
+fun TodoList(todos: List<String>, modifier: Modifier = Modifier) {
+    LazyColumn(modifier) {
+        items(todos) { currentTodo ->
+            Text(text = currentTodo, modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp))
+            HorizontalDivider()
+        }
+    }
+}
 
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
     ToDoAppTheme {
-        TodoScreen(modifier = Modifier)
+        TodoScreen()
     }
 }
